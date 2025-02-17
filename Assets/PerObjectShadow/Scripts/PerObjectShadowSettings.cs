@@ -92,6 +92,8 @@ public class PerObjectShadowSettings {
     public bool adaptiveRes = true;
     [Range(0, 0.1f)] public float padding = 0.01f; // prevent from sampling outside atlas (due to tex/pcf filtering) .in unity unit (meter), not in texel!
     [Range(0, 4)] public int adaptiveResRemapFactor = 3;
+    
+    private static readonly int MainLightPosition = Shader.PropertyToID("_MainLightPosition");
 
     #endregion
 
@@ -100,6 +102,10 @@ public class PerObjectShadowSettings {
             switch (lightDirectionFrom) {
                 case LightDirectionFrom.EulerAngles:
                     return Quaternion.Euler(eulerAngles);
+                case LightDirectionFrom.MainDirectionalLight:
+                    Vector3 lightDir = -Shader.GetGlobalVector(MainLightPosition);
+                    Quaternion lightRotation = Quaternion.FromToRotation(Vector3.forward, lightDir);
+                    return lightRotation;
                 default:
                     return Quaternion.identity;
             }
